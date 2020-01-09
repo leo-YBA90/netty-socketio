@@ -19,6 +19,9 @@ import java.util.UUID;
 
 import com.corundumstudio.socketio.scheduler.SchedulerKey;
 
+/**
+ * ask程序调度基础key
+ */
 public class AckSchedulerKey extends SchedulerKey {
 
     private final long index;
@@ -42,16 +45,17 @@ public class AckSchedulerKey extends SchedulerKey {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (!super.equals(obj))
+        }
+        if (!super.equals(obj)) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         AckSchedulerKey other = (AckSchedulerKey) obj;
-        if (index != other.index)
-            return false;
-        return true;
+        return index == other.index;
     }
 
 }
