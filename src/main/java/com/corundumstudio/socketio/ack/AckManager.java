@@ -33,31 +33,40 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
+/**
+ * ack字符 manager
+ */
 public class AckManager implements Disconnectable {
 
     class AckEntry {
 
+        // ConcurrentHashMap 用来保存连接的回调函数类
         final Map<Long, AckCallback<?>> ackCallbacks = PlatformDependent.newConcurrentHashMap();
         final AtomicLong ackIndex = new AtomicLong(-1);
 
+        // 把回调函数存入map中，并返回自增index
         public long addAckCallback(AckCallback<?> callback) {
             long index = ackIndex.incrementAndGet();
             ackCallbacks.put(index, callback);
             return index;
         }
 
+        // 获取所有自增id
         public Set<Long> getAckIndexes() {
             return ackCallbacks.keySet();
         }
 
+        // 根据自增index,获取回调函数类
         public AckCallback<?> getAckCallback(long index) {
             return ackCallbacks.get(index);
         }
 
+        // 根据index移除回调
         public AckCallback<?> removeCallback(long index) {
             return ackCallbacks.remove(index);
         }
 
+        // 重置index
         public void initAckIndex(long index) {
             ackIndex.compareAndSet(-1, index);
         }
