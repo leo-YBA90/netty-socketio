@@ -19,6 +19,9 @@ import io.netty.channel.ChannelHandlerContext;
 
 import java.util.concurrent.TimeUnit;
 
+/**
+ * 可撤销的调度器
+ */
 public interface CancelableScheduler {
 
     void update(ChannelHandlerContext ctx);

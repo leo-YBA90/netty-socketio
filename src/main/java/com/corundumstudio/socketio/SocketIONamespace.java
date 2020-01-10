@@ -22,6 +22,7 @@ import com.corundumstudio.socketio.listener.ClientListeners;
 
 /**
  * Fully thread-safe.
+ * 完全线程安全
  *
  */
 public interface SocketIONamespace extends ClientListeners {
@@ -34,14 +35,15 @@ public interface SocketIONamespace extends ClientListeners {
 
     /**
      * Get all clients connected to namespace
-     *
+     * 将所有客户端连接到命名空间
      * @return collection of clients
+     * 所有保存的客户端
      */
     Collection<SocketIOClient> getAllClients();
 
     /**
      * Get client by uuid connected to namespace
-     *
+     * 通过连接到命名空间的uuid获取客户端
      * @param uuid - id of client
      * @return client
      */

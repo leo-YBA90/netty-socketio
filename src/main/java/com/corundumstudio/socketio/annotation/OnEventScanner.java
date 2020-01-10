@@ -29,6 +29,9 @@ import com.corundumstudio.socketio.listener.DataListener;
 import com.corundumstudio.socketio.listener.MultiTypeEventListener;
 import com.corundumstudio.socketio.namespace.Namespace;
 
+/**
+ * OnEvent注解验证及回调逻辑
+ */
 public class OnEventScanner implements AnnotationScanner {
 
     @Override

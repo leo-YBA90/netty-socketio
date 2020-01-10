@@ -45,7 +45,12 @@ import com.corundumstudio.socketio.transport.NamespaceClient;
 import io.netty.util.internal.PlatformDependent;
 
 /**
+ * 一个命名空间中所有client对象。
+ *
  * Hub object for all clients in one namespace.
+ *
+ * 由不同的namespace-clients共享的namespace。
+ *
  * Namespace shares by different namespace-clients.
  *
  * @see com.corundumstudio.socketio.transport.NamespaceClient

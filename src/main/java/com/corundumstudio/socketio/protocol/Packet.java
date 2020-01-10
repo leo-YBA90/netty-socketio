@@ -24,6 +24,9 @@ import java.util.List;
 
 import com.corundumstudio.socketio.namespace.Namespace;
 
+/**
+ * 数据包
+ */
 public class Packet implements Serializable {
 
     private static final long serialVersionUID = 4560159536486711426L;

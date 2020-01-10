@@ -24,13 +24,22 @@ import com.corundumstudio.socketio.handler.SocketIOException;
 import com.corundumstudio.socketio.listener.DisconnectListener;
 import com.corundumstudio.socketio.namespace.Namespace;
 
+/**
+ * 断开连接时候调用，以及方法验证
+ */
 public class OnDisconnectScanner implements AnnotationScanner {
 
     @Override
     public Class<? extends Annotation> getScanAnnotation() {
         return OnDisconnect.class;
     }
-
+    /**
+     * 在命名空间中增加回调方法，当断开事件发生的时候反射此函数
+     * @param namespace 命名空间
+     * @param object    对象
+     * @param method    调用对象的函数
+     * @param annotation 注解
+     */
     @Override
     public void addListener(Namespace namespace, final Object object, final Method method, Annotation annotation) {
         namespace.addDisconnectListener(new DisconnectListener() {

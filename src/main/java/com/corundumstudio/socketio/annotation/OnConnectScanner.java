@@ -24,13 +24,27 @@ import com.corundumstudio.socketio.handler.SocketIOException;
 import com.corundumstudio.socketio.listener.ConnectListener;
 import com.corundumstudio.socketio.namespace.Namespace;
 
+/**
+ * 验证onConnect注解函数是否符合要求，及onConnect发生时回调此方法
+ */
 public class OnConnectScanner implements AnnotationScanner  {
 
+    /**
+     * 获取OnConnect.class
+     * @return  OnConnect.class
+     */
     @Override
     public Class<? extends Annotation> getScanAnnotation() {
         return OnConnect.class;
     }
 
+    /**
+     * 在命名空间中增加回调方法，当连接事件发生的时候反射此函数
+     * @param namespace 命名空间
+     * @param object    对象
+     * @param method    调用对象的函数
+     * @param annotation 注解
+     */
     @Override
     public void addListener(Namespace namespace, final Object object, final Method method, Annotation annotation) {
         namespace.addConnectListener(new ConnectListener() {
@@ -47,12 +61,19 @@ public class OnConnectScanner implements AnnotationScanner  {
         });
     }
 
+    /**
+     * 验证方法的参数中是否包含SocketIOClient
+     * @param method    回调方法
+     * @param clazz     回调class
+     */
     @Override
     public void validate(Method method, Class<?> clazz) {
+        // 方法必须包含参数
         if (method.getParameterTypes().length != 1) {
             throw new IllegalArgumentException("Wrong OnConnect listener signature: " + clazz + "." + method.getName());
         }
         boolean valid = false;
+        // 只要参数中不包含SocketIOClient则抛出异常
         for (Class<?> eventType : method.getParameterTypes()) {
             if (eventType.equals(SocketIOClient.class)) {
                 valid = true;

@@ -20,12 +20,31 @@ import java.lang.reflect.Method;
 
 import com.corundumstudio.socketio.namespace.Namespace;
 
+/**
+ * 扫描注解功能类需要实现的接口
+ */
 public interface AnnotationScanner {
 
+    /**
+     * 获取注解类
+     * @return
+     */
     Class<? extends Annotation> getScanAnnotation();
 
+    /**
+     * 在命名空间中增加回调方法，当连接事件发生的时候调用此函数
+     * @param namespace
+     * @param object
+     * @param method
+     * @param annotation
+     */
     void addListener(Namespace namespace, Object object, Method method, Annotation annotation);
 
+    /**
+     * 验证
+     * @param method
+     * @param clazz
+     */
     void validate(Method method, Class<?> clazz);
 
 }

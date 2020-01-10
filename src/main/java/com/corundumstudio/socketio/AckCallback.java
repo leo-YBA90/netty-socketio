@@ -17,14 +17,22 @@ package com.corundumstudio.socketio;
 
 
 /**
+ * ack回调基础类。
+ *
  * Base ack callback class.
+ *
+ * 通过回调方法通知从客户端接收到的确认信息。
  *
  * Notifies about acknowledgement received from client
  * via {@link #onSuccess} callback method.
  *
+ * 默认情况下，当SocketIOClient是活动的时候，它可以等待来自客户机的确认。可以将timeout定义为构造函数参数。
+ *
  * By default it may wait acknowledgement from client
  * while {@link SocketIOClient} is alive. Timeout can be
  * defined {@link #timeout} as constructor argument.
+ *
+ * 如果执行了onSuccess或onTimeout，则此对象不再是实际对象。
  *
  * This object is NOT actual anymore if {@link #onSuccess} or
  * {@link #onTimeout} was executed.
