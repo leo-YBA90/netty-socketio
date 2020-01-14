@@ -18,6 +18,9 @@ package com.corundumstudio.socketio;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ * 多类型的参数包装类
+ */
 public class MultiTypeArgs implements Iterable<Object> {
 
     private final List<Object> args;
