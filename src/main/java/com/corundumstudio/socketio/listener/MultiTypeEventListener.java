@@ -18,6 +18,7 @@ package com.corundumstudio.socketio.listener;
 import com.corundumstudio.socketio.MultiTypeArgs;
 
 /**
+ * 多类型事件监听器
  * Multi type args event listener
  *
  */
