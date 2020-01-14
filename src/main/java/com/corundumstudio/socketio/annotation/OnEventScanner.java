@@ -39,18 +39,31 @@ public class OnEventScanner implements AnnotationScanner {
         return OnEvent.class;
     }
 
+    /**
+     * 在命名空间中增加回调方法，当连接事件发生的时候反射此函数
+     * @param namespace
+     * @param object
+     * @param method
+     * @param annot
+     */
     @Override
     @SuppressWarnings("unchecked")
     public void addListener(Namespace namespace, final Object object, final Method method, Annotation annot) {
+        // 强制转换成OnEvent.class
         OnEvent annotation = (OnEvent) annot;
+        // 内部的事件为空的时候，抛出异常
         if (annotation.value() == null || annotation.value().trim().length() == 0) {
             throw new IllegalArgumentException("OnEvent \"value\" parameter is required");
         }
+        // SocketIOClient.class这个类在method中的第几个参数中
         final int socketIOClientIndex = paramIndex(method, SocketIOClient.class);
+        // AckRequest.class这个类在method中的第几个参数中
         final int ackRequestIndex = paramIndex(method, AckRequest.class);
+        // 检查参数里面不包含SocketIOClient.class和AckRequest.class的数量并把下标组装成list
         final List<Integer> dataIndexes = dataIndexes(method);
 
         if (dataIndexes.size() > 1) {
+            // 把参数list转换成实体class list
             List<Class<?>> classes = new ArrayList<Class<?>>();
             for (int index : dataIndexes) {
                 Class<?> param = method.getParameterTypes()[index];
@@ -125,6 +138,12 @@ public class OnEventScanner implements AnnotationScanner {
         return result;
     }
 
+    /**
+     * 检查clazz在method参数中的第几位
+     * @param method
+     * @param clazz
+     * @return
+     */
     private int paramIndex(Method method, Class<?> clazz) {
         int index = 0;
         for (Class<?> type : method.getParameterTypes()) {
