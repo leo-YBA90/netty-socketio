@@ -18,9 +18,16 @@ package com.corundumstudio.socketio.listener;
 import com.corundumstudio.socketio.AckRequest;
 import com.corundumstudio.socketio.SocketIOClient;
 
+/**
+ * 收到数据监听者
+ * @param <T>
+ */
 public interface DataListener<T> {
 
     /**
+     *
+     * 从客户端接收数据时调用
+     *
      * Invokes when data object received from client
      *
      * @param client - receiver
