@@ -22,7 +22,7 @@ import com.corundumstudio.socketio.listener.ClientListeners;
 
 /**
  * Fully thread-safe.
- * 完全线程安全
+ * 完全线程安全的namespace
  *
  */
 public interface SocketIONamespace extends ClientListeners {
