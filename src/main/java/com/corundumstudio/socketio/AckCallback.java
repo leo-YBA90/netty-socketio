@@ -73,6 +73,8 @@ public abstract class AckCallback<T> {
     }
 
     /**
+     * 当收到回调时，只执行一次
+     *
      * Executes only once when acknowledgement received from client.
      *
      * @param result - object sended by client
@@ -80,6 +82,7 @@ public abstract class AckCallback<T> {
     public abstract void onSuccess(T result);
 
     /**
+     * 当timeout被定义时，只执行一次
      * Invoked only once then <code>timeout</code> defined
      *
      */
@@ -88,6 +91,7 @@ public abstract class AckCallback<T> {
     }
 
     /**
+     * 返回Ack
      * Returns class of argument in {@link #onSuccess} method
      *
      * @return - result class
