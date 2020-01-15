@@ -41,7 +41,7 @@ public interface AnnotationScanner {
     void addListener(Namespace namespace, Object object, Method method, Annotation annotation);
 
     /**
-     * 验证
+     * 验证方法的参数中是否包含clazz
      * @param method
      * @param clazz
      */
