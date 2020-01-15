@@ -18,6 +18,9 @@ package com.corundumstudio.socketio;
 import com.corundumstudio.socketio.transport.WebSocketTransport;
 import com.corundumstudio.socketio.transport.PollingTransport;
 
+/**
+ * Transport枚举类
+ */
 public enum Transport {
 
     WEBSOCKET(WebSocketTransport.NAME),

@@ -64,6 +64,14 @@ import io.netty.handler.codec.http.QueryStringDecoder;
 import io.netty.handler.codec.http.cookie.Cookie;
 import io.netty.handler.codec.http.cookie.ServerCookieDecoder;
 
+/**
+ * 标识同一个ChannelHandler的实例可以被多次添加到多个ChannelPipelines中，而且不会出现竞争条件。
+ * 如果一个ChannelHandler没有标志@Shareable，在添加到到一个pipeline中时，你需要每次都创建一个新的handler实例，因为它的成员变量是不可分享的。
+ *
+ * 继承 #{@link ChannelInboundHandlerAdapter} 并且实现#{@link Disconnectable}接口
+ *
+ * 授权处理程序
+ */
 @Sharable
 public class AuthorizeHandler extends ChannelInboundHandlerAdapter implements Disconnectable {
 

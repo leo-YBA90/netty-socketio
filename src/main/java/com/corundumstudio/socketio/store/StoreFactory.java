@@ -26,6 +26,7 @@ import com.corundumstudio.socketio.store.pubsub.PubSubStore;
 
 /**
  *
+ * 创建一个client存储和PubSubStore
  * Creates a client Store and PubSubStore
  *
  */

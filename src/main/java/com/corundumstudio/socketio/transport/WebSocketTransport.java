@@ -53,6 +53,9 @@ import io.netty.handler.codec.http.websocketx.WebSocketServerHandshaker;
 import io.netty.handler.codec.http.websocketx.WebSocketServerHandshakerFactory;
 import io.netty.util.ReferenceCountUtil;
 
+/**
+ * websocket 传输信息，继承自 #{@link  ChannelInboundHandlerAdapter}
+ */
 @Sharable
 public class WebSocketTransport extends ChannelInboundHandlerAdapter {
 
@@ -81,8 +84,7 @@ public class WebSocketTransport extends ChannelInboundHandlerAdapter {
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         if (msg instanceof CloseWebSocketFrame) {
           ctx.channel().writeAndFlush(msg).addListener(ChannelFutureListener.CLOSE);
-        } else if (msg instanceof BinaryWebSocketFrame
-                    || msg instanceof TextWebSocketFrame) {
+        } else if (msg instanceof BinaryWebSocketFrame || msg instanceof TextWebSocketFrame) {
             ByteBufHolder frame = (ByteBufHolder) msg;
             ClientHead client = clientsBox.get(ctx.channel());
             if (client == null) {

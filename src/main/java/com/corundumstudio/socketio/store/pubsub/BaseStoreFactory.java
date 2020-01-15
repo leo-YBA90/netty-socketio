@@ -24,6 +24,9 @@ import com.corundumstudio.socketio.namespace.NamespacesHub;
 import com.corundumstudio.socketio.protocol.JsonSupport;
 import com.corundumstudio.socketio.store.StoreFactory;
 
+/**
+ * 基本储存工厂类
+ */
 public abstract class BaseStoreFactory implements StoreFactory {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
@@ -34,15 +37,22 @@ public abstract class BaseStoreFactory implements StoreFactory {
         return nodeId;
     }
 
+    /**
+     * 初始化发布订阅
+     * @param namespacesHub
+     * @param authorizeHandler
+     * @param jsonSupport
+     */
     @Override
     public void init(final NamespacesHub namespacesHub, final AuthorizeHandler authorizeHandler, JsonSupport jsonSupport) {
+        // 断开连接时，发生的事件，打印
         pubSubStore().subscribe(PubSubType.DISCONNECT, new PubSubListener<DisconnectMessage>() {
             @Override
             public void onMessage(DisconnectMessage msg) {
                 log.debug("{} sessionId: {}", PubSubType.DISCONNECT, msg.getSessionId());
             }
         }, DisconnectMessage.class);
-
+        // 连接事件发生时，执行权限验证
         pubSubStore().subscribe(PubSubType.CONNECT, new PubSubListener<ConnectMessage>() {
             @Override
             public void onMessage(ConnectMessage msg) {
@@ -50,7 +60,7 @@ public abstract class BaseStoreFactory implements StoreFactory {
                 log.debug("{} sessionId: {}", PubSubType.CONNECT, msg.getSessionId());
             }
         }, ConnectMessage.class);
-
+        // 执行分发消息时的逻辑
         pubSubStore().subscribe(PubSubType.DISPATCH, new PubSubListener<DispatchMessage>() {
             @Override
             public void onMessage(DispatchMessage msg) {
@@ -60,7 +70,7 @@ public abstract class BaseStoreFactory implements StoreFactory {
                 log.debug("{} packet: {}", PubSubType.DISPATCH, msg.getPacket());
             }
         }, DispatchMessage.class);
-
+        // 加入发布订阅时
         pubSubStore().subscribe(PubSubType.JOIN, new PubSubListener<JoinLeaveMessage>() {
             @Override
             public void onMessage(JoinLeaveMessage msg) {

@@ -15,6 +15,9 @@
  */
 package com.corundumstudio.socketio.store.pubsub;
 
+/**
+ * 发布订阅的type种类
+ */
 public enum PubSubType {
 
     CONNECT, DISCONNECT, JOIN, LEAVE, DISPATCH;

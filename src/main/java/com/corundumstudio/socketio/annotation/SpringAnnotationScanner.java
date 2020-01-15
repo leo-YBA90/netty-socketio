@@ -31,6 +31,9 @@ import org.springframework.util.ReflectionUtils.MethodFilter;
 
 import com.corundumstudio.socketio.SocketIOServer;
 
+/**
+ * 自定义springbean生成规则
+ */
 public class SpringAnnotationScanner implements BeanPostProcessor {
 
     private static final Logger log = LoggerFactory.getLogger(SpringAnnotationScanner.class);
@@ -47,8 +50,16 @@ public class SpringAnnotationScanner implements BeanPostProcessor {
         this.socketIOServer = socketIOServer;
     }
 
+    /**
+     * bean生成完成后处理函数
+     * @param bean
+     * @param beanName
+     * @return
+     * @throws BeansException
+     */
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+        // 如果包含SocketIoService这个类的bean，则把他加入到listener中，并返回bean
         if (originalBeanClass != null) {
             socketIOServer.addListeners(bean, originalBeanClass);
             log.info("{} bean listeners added", beanName);
@@ -57,14 +68,20 @@ public class SpringAnnotationScanner implements BeanPostProcessor {
         return bean;
     }
 
+    /**
+     * bean生成前处理函数
+     * @param bean
+     * @param beanName
+     * @return
+     * @throws BeansException
+     */
     @Override
     public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
         final AtomicBoolean add = new AtomicBoolean();
-        ReflectionUtils.doWithMethods(bean.getClass(),
-                new MethodCallback() {
+        // 在反射工具类中加入method回调程序
+        ReflectionUtils.doWithMethods(bean.getClass(), new MethodCallback() {
             @Override
-            public void doWith(Method method) throws IllegalArgumentException,
-            IllegalAccessException {
+            public void doWith(Method method) throws IllegalArgumentException, IllegalAccessException {
                 add.set(true);
             }
         },

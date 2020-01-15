@@ -28,46 +28,70 @@ import com.corundumstudio.socketio.store.StoreFactory;
 
 import javax.net.ssl.KeyManagerFactory;
 
+/**
+ * 配置信息
+ */
 public class Configuration {
 
+    /** 错误listener */
     private ExceptionListener exceptionListener = new DefaultExceptionListener();
 
     private String context = "/socket.io";
 
+    /**
+     * 把Transport枚举类组装成list
+     */
     private List<Transport> transports = Arrays.asList(Transport.WEBSOCKET, Transport.POLLING);
 
+    /** worker线程和boss线程的数量 */
     private int bossThreads = 0; // 0 = current_processors_amount * 2
     private int workerThreads = 0; // 0 = current_processors_amount * 2
+    /** 是否使用linux的epoll */
     private boolean useLinuxNativeEpoll;
 
+    /** 是否允许自定义请求 */
     private boolean allowCustomRequests = false;
 
+    /** 升级超时时间 */
     private int upgradeTimeout = 10000;
+    /** ping超时时间 */
     private int pingTimeout = 60000;
+    /** ping时间间隔 */
     private int pingInterval = 25000;
+    /** 第一个数据超时时间 */
     private int firstDataTimeout = 5000;
-
+    /** 最大Http内容长度 */
     private int maxHttpContentLength = 64 * 1024;
+    /** 最大帧长度 */
     private int maxFramePayloadLength = 64 * 1024;
-
+    /** 包前缀 */
     private String packagePrefix;
+    /** 主机名 */
     private String hostname;
     private int port = -1;
-
+    /** ssl协议 */
     private String sslProtocol = "TLSv1";
 
+    /** 密钥存储格式 */
     private String keyStoreFormat = "JKS";
+    /** 秘钥输入流 */
     private InputStream keyStore;
+    /** 秘钥文件密码 */
     private String keyStorePassword;
-
+    /** 可信任的存储格式 */
     private String trustStoreFormat = "JKS";
+    /** 可信任的存储输入流 */
     private InputStream trustStore;
+    /** 可信任的存储密码 */
     private String trustStorePassword;
 
+    /** 秘钥工厂算法 */
     private String keyManagerFactoryAlgorithm = KeyManagerFactory.getDefaultAlgorithm();
 
+    /** 是否使用直接缓冲区 */
     private boolean preferDirectBuffer = true;
 
+    /** TCP套接字配置 */
     private SocketConfig socketConfig = new SocketConfig();
 
     private StoreFactory storeFactory = new MemoryStoreFactory();

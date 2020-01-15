@@ -24,6 +24,9 @@ import java.util.List;
 import com.corundumstudio.socketio.AckCallback;
 
 /**
+ * JSON基础接口。
+ * 允许实现对JSON支持操作的自定义实现。
+ *
  * JSON infrastructure interface.
  * Allows to implement custom realizations
  * to JSON support operations.

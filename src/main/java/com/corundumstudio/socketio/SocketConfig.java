@@ -16,6 +16,8 @@
 package com.corundumstudio.socketio;
 
 /**
+ * TCP socket 配置包含,主服务器通道和客户端通道的配置
+ *
  * TCP socket configuration contains configuration for main server channel
  * and client channels
  *

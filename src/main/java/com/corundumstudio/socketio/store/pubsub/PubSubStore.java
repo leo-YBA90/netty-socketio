@@ -15,7 +15,9 @@
  */
 package com.corundumstudio.socketio.store.pubsub;
 
-
+/**
+ * 发布订阅存储
+ */
 public interface PubSubStore {
 
     void publish(PubSubType type, PubSubMessage msg);

@@ -27,8 +27,12 @@ import com.corundumstudio.socketio.SocketIOClient;
 import com.corundumstudio.socketio.SocketIONamespace;
 import com.corundumstudio.socketio.misc.CompositeIterable;
 
+/**
+ * namespace管理中心
+ */
 public class NamespacesHub {
 
+    /** 通过key存储namespace的map */
     private final ConcurrentMap<String, SocketIONamespace> namespaces = PlatformDependent.newConcurrentHashMap();
     private final Configuration configuration;
 
@@ -36,6 +40,11 @@ public class NamespacesHub {
         this.configuration = configuration;
     }
 
+    /**
+     * 根据name获取#{@link Namespace}
+     * @param name
+     * @return
+     */
     public Namespace create(String name) {
         Namespace namespace = (Namespace) namespaces.get(name);
         if (namespace == null) {
@@ -48,6 +57,11 @@ public class NamespacesHub {
         return namespace;
     }
 
+    /**
+     * 根据room名称获取#{@link SocketIOClient} 迭代器
+     * @param room
+     * @return
+     */
     public Iterable<SocketIOClient> getRoomClients(String room) {
         List<Iterable<SocketIOClient>> allClients = new ArrayList<Iterable<SocketIOClient>>();
         for (SocketIONamespace namespace : namespaces.values()) {
@@ -57,10 +71,19 @@ public class NamespacesHub {
         return new CompositeIterable<SocketIOClient>(allClients);
     }
 
+    /**
+     * 根据name获取#{@link Namespace}
+     * @param name
+     * @return
+     */
     public Namespace get(String name) {
         return (Namespace) namespaces.get(name);
     }
 
+    /**
+     * 移除#{@link SocketIONamespace} 并关闭连接
+     * @param name
+     */
     public void remove(String name) {
         SocketIONamespace namespace = namespaces.remove(name);
         if (namespace != null) {
@@ -68,6 +91,10 @@ public class NamespacesHub {
         }
     }
 
+    /**
+     * 获取所有注册的 #{@link SocketIONamespace}
+     * @return
+     */
     public Collection<SocketIONamespace> getAllNamespaces() {
         return namespaces.values();
     }

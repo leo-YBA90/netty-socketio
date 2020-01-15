@@ -69,6 +69,8 @@ public class SocketIOServer implements ClientListeners {
     }
 
     /**
+     * 返回默认名称空间中的所有客户端实例
+     *
      * Get all clients connected to default namespace
      *
      * @return clients collection
@@ -78,6 +80,8 @@ public class SocketIOServer implements ClientListeners {
     }
 
     /**
+     * 返回默认名称空间的指定客户端。
+     *
      * Get client by uuid from default namespace
      *
      * @param uuid - id of client
@@ -96,11 +100,18 @@ public class SocketIOServer implements ClientListeners {
         return namespacesHub.getAllNamespaces();
     }
 
+    /**
+     * 返回默认名称空间的所有实例组成的广播对象。
+     * @return
+     */
     public BroadcastOperations getBroadcastOperations() {
         return new BroadcastOperations(getAllClients(), configCopy.getStoreFactory());
     }
 
     /**
+     *
+     * 返回所有命名空间中指定房间的广播对象，如果命名空间只有一个，该方法到可以大胆使用。
+     *
      * Get broadcast operations for clients within
      * room by <code>room</code> name
      *
@@ -200,6 +211,11 @@ public class SocketIOServer implements ClientListeners {
         return namespacesHub.create(name);
     }
 
+    /**
+     * 返回指定名称的命名空间。
+     * @param name
+     * @return
+     */
     public SocketIONamespace getNamespace(String name) {
         return namespacesHub.get(name);
     }
