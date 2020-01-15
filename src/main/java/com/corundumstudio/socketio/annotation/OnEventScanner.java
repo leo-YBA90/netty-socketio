@@ -165,6 +165,11 @@ public class OnEventScanner implements AnnotationScanner {
         return -1;
     }
 
+    /**
+     * 验证方法的参数中是否包含clazz
+     * @param method
+     * @param clazz
+     */
     @Override
     public void validate(Method method, Class<?> clazz) {
         int paramsCount = method.getParameterTypes().length;
