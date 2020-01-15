@@ -56,6 +56,11 @@ public class OnDisconnectScanner implements AnnotationScanner {
         });
     }
 
+    /**
+     * 验证方法的参数中是否包含SocketIOClient
+     * @param method
+     * @param clazz
+     */
     @Override
     public void validate(Method method, Class<?> clazz) {
         if (method.getParameterTypes().length != 1) {
