@@ -62,6 +62,7 @@ public class OnEventScanner implements AnnotationScanner {
         // 检查参数里面不包含SocketIOClient.class和AckRequest.class的数量并把下标组装成list
         final List<Integer> dataIndexes = dataIndexes(method);
 
+        // 如果需要传入的参数大于1
         if (dataIndexes.size() > 1) {
             // 把参数list转换成实体class list
             List<Class<?>> classes = new ArrayList<Class<?>>();
@@ -70,10 +71,12 @@ public class OnEventScanner implements AnnotationScanner {
                 classes.add(param);
             }
 
+            // 把事件监听器与时间放入namespace中，当发生对应的事件时，调用对应的事件监听器函数
             namespace.addMultiTypeEventListener(annotation.value(), new MultiTypeEventListener() {
                 @Override
                 public void onData(SocketIOClient client, MultiTypeArgs data, AckRequest ackSender) {
                     try {
+                        // 把对应的参数组装成数组作为对象传入method中
                         Object[] args = new Object[method.getParameterTypes().length];
                         if (socketIOClientIndex != -1) {
                             args[socketIOClientIndex] = client;
@@ -82,10 +85,12 @@ public class OnEventScanner implements AnnotationScanner {
                             args[ackRequestIndex] = ackSender;
                         }
                         int i = 0;
+                        // warn 参数需要严格按照method的参数顺序，不然会出错
                         for (int index : dataIndexes) {
                             args[index] = data.get(i);
                             i++;
                         }
+                        // 通过反射调用函数
                         method.invoke(object, args);
                     } catch (InvocationTargetException e) {
                         throw new SocketIOException(e.getCause());
@@ -95,15 +100,19 @@ public class OnEventScanner implements AnnotationScanner {
                 }
             }, classes.toArray(new Class[classes.size()]));
         } else {
+            // 预先定义为void
             Class objectType = Void.class;
+            // 获取第一个入参
             if (!dataIndexes.isEmpty()) {
                 objectType = method.getParameterTypes()[dataIndexes.iterator().next()];
             }
-
+            // 往命名空间中增加OnEvent的value事件，并把数据类型传入，当发生该事件时，调用该事件的listener
             namespace.addEventListener(annotation.value(), objectType, new DataListener<Object>() {
+                // 事件发生时，调用此函数，并进行相应处理
                 @Override
                 public void onData(SocketIOClient client, Object data, AckRequest ackSender) {
                     try {
+                        // 组装入参
                         Object[] args = new Object[method.getParameterTypes().length];
                         if (socketIOClientIndex != -1) {
                             args[socketIOClientIndex] = client;
@@ -115,6 +124,7 @@ public class OnEventScanner implements AnnotationScanner {
                             int dataIndex = dataIndexes.iterator().next();
                             args[dataIndex] = data;
                         }
+                        // 反射调用此函数
                         method.invoke(object, args);
                     } catch (InvocationTargetException e) {
                         throw new SocketIOException(e.getCause());
