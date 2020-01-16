@@ -30,6 +30,8 @@ import com.corundumstudio.socketio.store.Store;
 public interface SocketIOClient extends ClientOperations, Store {
 
     /**
+     * 客户端连接期间使用的握手数据#{@link HandshakeData}
+     *
      * Handshake data used during client connection
      *
      * @return HandshakeData
@@ -37,6 +39,8 @@ public interface SocketIOClient extends ClientOperations, Store {
     HandshakeData getHandshakeData();
 
     /**
+     * 当前客户端传输协议
+     *
      * Current client transport protocol
      *
      * @return transport protocol
@@ -44,6 +48,8 @@ public interface SocketIOClient extends ClientOperations, Store {
     Transport getTransport();
 
     /**
+     * 发送事件与ack回调
+     *
      * Send event with ack callback
      *
      * @param name - event name
@@ -53,6 +59,8 @@ public interface SocketIOClient extends ClientOperations, Store {
     void sendEvent(String name, AckCallback<?> ackCallback, Object ... data);
 
     /**
+     * 发送packet与ack回调
+     *
      * Send packet with ack callback
      *
      * @param packet - packet to send
@@ -61,6 +69,9 @@ public interface SocketIOClient extends ClientOperations, Store {
     void send(Packet packet, AckCallback<?> ackCallback);
 
     /**
+     *
+     * client的namespace
+     *
      * Client namespace
      *
      * @return - namespace
@@ -103,6 +114,8 @@ public interface SocketIOClient extends ClientOperations, Store {
     void leaveRoom(String room);
 
     /**
+     * 获取client加入的room
+     *
      * Get all rooms a client is joined in.
      *
      * @return name of rooms
