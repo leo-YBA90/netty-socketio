@@ -66,6 +66,9 @@ import io.netty.util.Attribute;
 import io.netty.util.AttributeKey;
 import io.netty.util.CharsetUtil;
 
+/**
+ * 编码发送的handler
+ */
 @Sharable
 public class EncoderHandler extends ChannelOutboundHandlerAdapter {
 
@@ -113,6 +116,12 @@ public class EncoderHandler extends ChannelOutboundHandlerAdapter {
         }
     }
 
+    /**
+     * 往ctx中写msg，promise负责监听消息状态
+     * @param msg
+     * @param ctx
+     * @param promise
+     */
     private void write(XHROptionsMessage msg, ChannelHandlerContext ctx, ChannelPromise promise) {
         HttpResponse res = new DefaultHttpResponse(HTTP_1_1, HttpResponseStatus.OK);
 
@@ -121,12 +130,20 @@ public class EncoderHandler extends ChannelOutboundHandlerAdapter {
                     .add(HttpHeaderNames.ACCESS_CONTROL_ALLOW_HEADERS, HttpHeaderNames.CONTENT_TYPE);
 
         String origin = ctx.channel().attr(ORIGIN).get();
+        // 增加headers
         addOriginHeaders(origin, res);
-
+        // 转换成ByteBuf
         ByteBuf out = encoder.allocateBuffer(ctx.alloc());
+        // 发送消息
         sendMessage(msg, ctx.channel(), out, res, promise);
     }
 
+    /**
+     * 往context中写
+     * @param msg
+     * @param ctx
+     * @param promise
+     */
     private void write(XHRPostMessage msg, ChannelHandlerContext ctx, ChannelPromise promise) {
         ByteBuf out = encoder.allocateBuffer(ctx.alloc());
         out.writeBytes(OK);
@@ -158,6 +175,7 @@ public class EncoderHandler extends ChannelOutboundHandlerAdapter {
     }
 
     private void sendMessage(HttpMessage msg, Channel channel, ByteBuf out, HttpResponse res, ChannelPromise promise) {
+        // 写response
         channel.write(res);
 
         if (log.isTraceEnabled()) {
@@ -169,11 +187,12 @@ public class EncoderHandler extends ChannelOutboundHandlerAdapter {
         }
 
         if (out.isReadable()) {
+            // 写out
             channel.write(new DefaultHttpContent(out));
         } else {
             out.release();
         }
-
+        // 写结束符，并增加close监听
         channel.writeAndFlush(LastHttpContent.EMPTY_LAST_CONTENT, promise).addListener(ChannelFutureListener.CLOSE);
     }
     

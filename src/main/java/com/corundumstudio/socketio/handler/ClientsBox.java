@@ -23,6 +23,9 @@ import java.util.UUID;
 
 import com.corundumstudio.socketio.HandshakeData;
 
+/**
+ * todo
+ */
 public class ClientsBox {
 
     private final Map<UUID, ClientHead> uuid2clients = PlatformDependent.newConcurrentHashMap();

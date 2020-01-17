@@ -36,8 +36,7 @@ public class PacketListener {
     private final AckManager ackManager;
     private final CancelableScheduler scheduler;
 
-    public PacketListener(AckManager ackManager, NamespacesHub namespacesHub, PollingTransport xhrPollingTransport,
-            CancelableScheduler scheduler) {
+    public PacketListener(AckManager ackManager, NamespacesHub namespacesHub, PollingTransport xhrPollingTransport, CancelableScheduler scheduler) {
         this.ackManager = ackManager;
         this.namespacesHub = namespacesHub;
         this.scheduler = scheduler;

@@ -33,6 +33,9 @@ import com.corundumstudio.socketio.namespace.Namespace;
 import com.corundumstudio.socketio.protocol.Packet;
 import com.corundumstudio.socketio.protocol.PacketType;
 
+/**
+ * #{@link SocketIOClient} 接口实现，主要保存namespace
+ */
 public class NamespaceClient implements SocketIOClient {
 
     private static final Logger log = LoggerFactory.getLogger(NamespaceClient.class);

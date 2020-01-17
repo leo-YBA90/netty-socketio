@@ -33,6 +33,9 @@ import com.corundumstudio.socketio.protocol.PacketDecoder;
 import com.corundumstudio.socketio.protocol.PacketType;
 import com.corundumstudio.socketio.transport.NamespaceClient;
 
+/**
+ * 消息入口
+ */
 @Sharable
 public class InPacketHandler extends SimpleChannelInboundHandler<PacketsMessage> {
 
@@ -52,8 +55,7 @@ public class InPacketHandler extends SimpleChannelInboundHandler<PacketsMessage>
     }
 
     @Override
-    protected void channelRead0(io.netty.channel.ChannelHandlerContext ctx, PacketsMessage message)
-                throws Exception {
+    protected void channelRead0(io.netty.channel.ChannelHandlerContext ctx, PacketsMessage message) throws Exception {
         ByteBuf content = message.getContent();
         ClientHead client = message.getClient();
 

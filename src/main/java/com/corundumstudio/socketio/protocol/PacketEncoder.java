@@ -30,6 +30,9 @@ import java.util.Queue;
 
 import com.corundumstudio.socketio.Configuration;
 
+/**
+ * #{@link Packet} 编码器
+ */
 public class PacketEncoder {
 
     private static final byte[] BINARY_HEADER = "b4".getBytes(CharsetUtil.UTF_8);
@@ -65,12 +68,14 @@ public class PacketEncoder {
 
         int i = 0;
         while (true) {
+            // 从queue中把数据包取出来
             Packet packet = packets.poll();
             if (packet == null || i == limit) {
                 break;
             }
 
             ByteBuf packetBuf = allocateBuffer(allocator);
+            // 执行加密
             encodePacket(packet, packetBuf, allocator, true);
 
             int packetSize = packetBuf.writerIndex();
@@ -131,6 +136,7 @@ public class PacketEncoder {
 
             i++;
 
+            // 对packet内的数据buffer进行追加
             for (ByteBuf attachment : packet.getAttachments()) {
                 buffer.writeByte(1);
                 buffer.writeBytes(longToBytes(attachment.readableBytes() + 1));
@@ -168,9 +174,11 @@ public class PacketEncoder {
 
     // Requires positive x
     static int stringSize(long x) {
-        for (int i = 0;; i++)
-            if (x <= sizeTable[i])
+        for (int i = 0;; i++) {
+            if (x <= sizeTable[i]) {
                 return i + 1;
+            }
+        }
     }
 
     static void getChars(long i, int index, byte[] buf) {
@@ -227,6 +235,14 @@ public class PacketEncoder {
         return res;
     }
 
+    /**
+     * 对packet进行加密，并写在buffer里面，用于传输或者读取
+     * @param packet
+     * @param buffer
+     * @param allocator
+     * @param binary
+     * @throws IOException
+     */
     public void encodePacket(Packet packet, ByteBuf buffer, ByteBufAllocator allocator, boolean binary) throws IOException {
         ByteBuf buf = buffer;
         if (!binary) {
@@ -236,6 +252,7 @@ public class PacketEncoder {
         buf.writeByte(type);
 
         try {
+            // 根据packet的type执行不同的编码
             switch (packet.getType()) {
 
                 case PONG: {
@@ -317,6 +334,8 @@ public class PacketEncoder {
 
                     break;
                 }
+                default:
+                    break;
             }
         } finally {
             // we need to write a buffer in any case
@@ -332,6 +351,12 @@ public class PacketEncoder {
         }
     }
 
+    /**
+     * 在buffer中寻找是否包含searchValue这些字节，如果有则返回开始位置，否则返回-1
+     * @param buffer
+     * @param searchValue
+     * @return
+     */
     public static int find(ByteBuf buffer, ByteBuf searchValue) {
         for (int i = buffer.readerIndex(); i < buffer.readerIndex() + buffer.readableBytes(); i++) {
             if (isValueFound(buffer, i, searchValue)) {

@@ -93,23 +93,23 @@ public class Configuration {
 
     /** TCP套接字配置 */
     private SocketConfig socketConfig = new SocketConfig();
-
+    /** 默认用内存来保存sessionId和namespace */
     private StoreFactory storeFactory = new MemoryStoreFactory();
 
     private JsonSupport jsonSupport;
-
+    /** 授权listener，默认成功 */
     private AuthorizationListener authorizationListener = new SuccessAuthorizationListener();
-
+    /** 默认成功后才应答 */
     private AckMode ackMode = AckMode.AUTO_SUCCESS_ONLY;
-
+    /** 添加版本头 */
     private boolean addVersionHeader = true;
 
     private String origin;
-
+    /** http压缩 */
     private boolean httpCompression = true;
-
+    /** websocket 压缩 */
     private boolean websocketCompression = true;
-
+    /** 随机session */
     private boolean randomSession = false;
 
     public Configuration() {
@@ -271,6 +271,10 @@ public class Configuration {
     }
 
     /**
+     * 允许服务自定义请求不同于 socket.io 的协议。
+     * 在这种情况下，需要添加自己的处理程序来处理它们，以避免连接挂起。
+     * 默认为{@code false}
+     *
      * Allow to service custom requests differs from socket.io protocol.
      * In this case it's necessary to add own handler which handle them
      * to avoid hang connections.
@@ -347,8 +351,12 @@ public class Configuration {
     }
 
     /**
+     * 包前缀，用于从客户端发送不包含完整类名的json-object。
+     *
      * Package prefix for sending json-object from client
      * without full class name.
+     *
+     * 使用已定义的包前缀socket.io客户端只需要在json对象中定义'@class: 'SomeType "而不是'@class: 'com.full.package.name.SomeType "
      *
      * With defined package prefix socket.io client
      * just need to define '@class: 'SomeType'' in json object
@@ -365,6 +373,8 @@ public class Configuration {
     }
 
     /**
+     * 包编码过程中使用的缓冲区分配方法。
+     *
      * Buffer allocation method used during packet encoding.
      * Default is {@code true}
      *
@@ -380,6 +390,8 @@ public class Configuration {
     }
 
     /**
+     * 用于存储会话数据并实现分布式pubsub。
+     *
      * Data store - used to store session data and implements distributed pubsub.
      * Default is {@code MemoryStoreFactory}
      *
@@ -397,6 +409,10 @@ public class Configuration {
     }
 
     /**
+     * 在每次握手时调用授权侦听器。
+     * 通过{@code AuthorizationListener.isAuthorized}方法接受或拒绝客户。
+     * 默认接受所有客户端。
+     *
      * Authorization listener invoked on every handshake.
      * Accepts or denies a client by {@code AuthorizationListener.isAuthorized} method.
      * <b>Accepts</b> all clients by default.
@@ -558,6 +574,8 @@ public class Configuration {
     }
 
     /**
+     * 通道打开和首次数据传输之间的超时有助于避免“静默通道”攻击，并防止在这种情况下出现“打开太多文件”的问题
+     *
      * Timeout between channel opening and first data transfer
      * Helps to avoid 'silent channel' attack and prevents
      * 'Too many open files' problem in this case

@@ -22,9 +22,15 @@ import com.corundumstudio.socketio.protocol.Packet;
 
 import io.netty.channel.Channel;
 
+/**
+ * channel的传输状态
+ * 包含channel和等待发送的数据
+ */
 public class TransportState {
 
+    /** 等待发送的#{@link Packet} 的队列 */
     private Queue<Packet> packetsQueue = new ConcurrentLinkedQueue<Packet>();
+    /** channel */
     private Channel channel;
 
     public void setPacketsQueue(Queue<Packet> packetsQueue) {

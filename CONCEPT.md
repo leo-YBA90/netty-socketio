@@ -12,5 +12,9 @@ netty-socketio中的namespace可以用于区别在相同连接地址下的不同
 广播的时候是以namespace为单位的，如果只想广播给某个room，那就需要另外指定room的名字。
 
 总结来讲room是属于namespace内的一个房间，namespace包含多个room
-####
+####hazelcast
+分布式缓存，基于java实现，类似于redis，使用多线程。通过hash到不同的partition，然后保存多个副本到不同partition  
+
+
+
 ####

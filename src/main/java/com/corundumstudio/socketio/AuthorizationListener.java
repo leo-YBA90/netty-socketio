@@ -18,10 +18,13 @@ package com.corundumstudio.socketio;
 public interface AuthorizationListener {
 
     /**
+     * 检查客户端是否已授权握手数据
+     *
      * Checks is client with handshake data is authorized
      *
      * @param data - handshake data
      * @return - <b>true</b> if client is authorized of <b>false</b> otherwise
+     * 如果验证通过true
      */
     boolean isAuthorized(HandshakeData data);
 

@@ -65,7 +65,7 @@ public abstract class BaseStoreFactory implements StoreFactory {
             @Override
             public void onMessage(DispatchMessage msg) {
                 String name = msg.getRoom();
-
+                // 从命名空间中获取namespace 并执行分发
                 namespacesHub.get(msg.getNamespace()).dispatch(name, msg.getPacket());
                 log.debug("{} packet: {}", PubSubType.DISPATCH, msg.getPacket());
             }
@@ -75,17 +75,17 @@ public abstract class BaseStoreFactory implements StoreFactory {
             @Override
             public void onMessage(JoinLeaveMessage msg) {
                 String name = msg.getRoom();
-
+                // 把sessionId加入到namespace的room中
                 namespacesHub.get(msg.getNamespace()).join(name, msg.getSessionId());
                 log.debug("{} sessionId: {}", PubSubType.JOIN, msg.getSessionId());
             }
         }, JoinLeaveMessage.class);
-
+        // 离开时
         pubSubStore().subscribe(PubSubType.LEAVE, new PubSubListener<JoinLeaveMessage>() {
             @Override
             public void onMessage(JoinLeaveMessage msg) {
                 String name = msg.getRoom();
-
+                // 从namespace中移除sessionId
                 namespacesHub.get(msg.getNamespace()).leave(name, msg.getSessionId());
                 log.debug("{} sessionId: {}", PubSubType.LEAVE, msg.getSessionId());
             }

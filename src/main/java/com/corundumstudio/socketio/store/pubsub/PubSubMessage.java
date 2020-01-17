@@ -17,6 +17,9 @@ package com.corundumstudio.socketio.store.pubsub;
 
 import java.io.Serializable;
 
+/**
+ * 发布订阅消息基础类
+ */
 public abstract class PubSubMessage implements Serializable {
 
     private static final long serialVersionUID = -8789343104393884987L;
