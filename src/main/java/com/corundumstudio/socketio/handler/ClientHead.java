@@ -45,6 +45,9 @@ import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+/**
+ * TODO
+ */
 public class ClientHead {
 
     private static final Logger log = LoggerFactory.getLogger(ClientHead.class);
@@ -52,7 +55,9 @@ public class ClientHead {
     public static final AttributeKey<ClientHead> CLIENT = AttributeKey.<ClientHead>valueOf("client");
 
     private final AtomicBoolean disconnected = new AtomicBoolean();
+    /** 保存namespace 的 client */
     private final Map<Namespace, NamespaceClient> namespaceClients = PlatformDependent.newConcurrentHashMap();
+    /** 保存transport */
     private final Map<Transport, TransportState> channels = new HashMap<Transport, TransportState>(2);
     private final HandshakeData handshakeData;
     private final UUID sessionId;
@@ -63,7 +68,7 @@ public class ClientHead {
     private ClientsBox clientsBox;
     private final CancelableScheduler disconnectScheduler;
     private final Configuration configuration;
-
+    /** 最后的包 */
     private Packet lastBinaryPacket;
 
     // TODO use lazy set
@@ -86,16 +91,24 @@ public class ClientHead {
         channels.put(Transport.WEBSOCKET, new TransportState());
     }
 
+    /**
+     * 绑定channel
+     * @param channel
+     * @param transport
+     */
     public void bindChannel(Channel channel, Transport transport) {
         log.debug("binding channel: {} to transport: {}", channel, transport);
-
+        // 根据transport获取channel的传输信息
         TransportState state = channels.get(transport);
+        // 重新设置transport对应的channel
         Channel prevChannel = state.update(channel);
         if (prevChannel != null) {
+            // 在clientbox中移除channel
             clientsBox.remove(prevChannel);
         }
+        // 把本channel加入到clientbox中
         clientsBox.add(channel, this);
-
+        // 发送包
         sendPackets(transport, channel);
     }
 
@@ -115,6 +128,9 @@ public class ClientHead {
         return send(packet, getCurrentTransport());
     }
 
+    /**
+     * 取消延时函数
+     */
     public void cancelPingTimeout() {
         SchedulerKey key = new SchedulerKey(Type.PING_TIMEOUT, sessionId);
         disconnectScheduler.cancel(key);
@@ -146,10 +162,20 @@ public class ClientHead {
         return sendPackets(transport, channel);
     }
 
+    /**
+     * 发送一个包
+     * @param transport
+     * @param channel
+     * @return
+     */
     private ChannelFuture sendPackets(Transport transport, Channel channel) {
         return channel.writeAndFlush(new OutPacketMessage(this, transport));
     }
 
+    /**
+     * 从NamespaceClients中移除client
+     * @param client
+     */
     public void removeNamespaceClient(NamespaceClient client) {
         namespaceClients.remove(client.getNamespace());
         if (namespaceClients.isEmpty()) {
@@ -157,6 +183,11 @@ public class ClientHead {
         }
     }
 
+    /**
+     * 获取一个NamespaceClient
+     * @param namespace
+     * @return
+     */
     public NamespaceClient getChildClient(Namespace namespace) {
         return namespaceClients.get(namespace);
     }
@@ -175,13 +206,19 @@ public class ClientHead {
         return !disconnected.get();
     }
 
+    /**
+     * namespaceClients断开连接时调用此函数
+     */
     public void onChannelDisconnect() {
+        // 取消延时ping
         cancelPingTimeout();
-
+        // 设置断开连接为true
         disconnected.set(true);
+        // 依次调用client.onDisconnect();
         for (NamespaceClient client : namespaceClients.values()) {
             client.onDisconnect();
         }
+        // 依次移除channel
         for (TransportState state : channels.values()) {
             if (state.getChannel() != null) {
                 clientsBox.remove(state.getChannel());
@@ -205,12 +242,16 @@ public class ClientHead {
         return handshakeData.getAddress();
     }
 
+    /**
+     * 发送断开连接的包
+     */
     public void disconnect() {
         ChannelFuture future = send(new Packet(PacketType.DISCONNECT));
 		if(future != null) {
+		    // 增加close回调函数
 			future.addListener(ChannelFutureListener.CLOSE);
 		}
-
+		// namespace内的channel全部断开连接
         onChannelDisconnect();
     }
 
@@ -228,6 +269,12 @@ public class ClientHead {
         return store;
     }
 
+    /**
+     * 检测是否为#{@link Transport} 连接
+     * @param channel
+     * @param transport
+     * @return
+     */
     public boolean isTransportChannel(Channel channel, Transport transport) {
         TransportState state = channels.get(transport);
         if (state.getChannel() == null) {
@@ -236,6 +283,10 @@ public class ClientHead {
         return state.getChannel().equals(channel);
     }
 
+    /**
+     * 修改当前的#{@link Transport}的连接方式
+     * @param currentTransport
+     */
     public void upgradeCurrentTransport(Transport currentTransport) {
         TransportState state = channels.get(currentTransport);
 
