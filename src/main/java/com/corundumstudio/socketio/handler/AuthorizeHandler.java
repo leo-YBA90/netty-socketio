@@ -76,7 +76,7 @@ import io.netty.handler.codec.http.cookie.ServerCookieDecoder;
 public class AuthorizeHandler extends ChannelInboundHandlerAdapter implements Disconnectable {
 
     private static final Logger log = LoggerFactory.getLogger(AuthorizeHandler.class);
-
+    // 延时函数调度器
     private final CancelableScheduler disconnectScheduler;
 
     private final String connectPath;
@@ -100,6 +100,11 @@ public class AuthorizeHandler extends ChannelInboundHandlerAdapter implements Di
         this.clientsBox = clientsBox;
     }
 
+    /**
+     * 关闭channel之后重新打开
+     * @param ctx
+     * @throws Exception
+     */
     @Override
     public void channelActive(final ChannelHandlerContext ctx) throws Exception {
         SchedulerKey key = new SchedulerKey(Type.PING_TIMEOUT, ctx.channel());
@@ -115,25 +120,26 @@ public class AuthorizeHandler extends ChannelInboundHandlerAdapter implements Di
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+        // 组装ping调度程序，保持心跳连接
         SchedulerKey key = new SchedulerKey(Type.PING_TIMEOUT, ctx.channel());
+        // 由于有信息进来，取消下一次的ping
         disconnectScheduler.cancel(key);
 
         if (msg instanceof FullHttpRequest) {
             FullHttpRequest req = (FullHttpRequest) msg;
             Channel channel = ctx.channel();
             QueryStringDecoder queryDecoder = new QueryStringDecoder(req.uri());
-
-            if (!configuration.isAllowCustomRequests()
-                    && !queryDecoder.path().startsWith(connectPath)) {
+            // 如果不符合要求，直接release，并且返回bad_request
+            if (!configuration.isAllowCustomRequests() && !queryDecoder.path().startsWith(connectPath)) {
                 HttpResponse res = new DefaultHttpResponse(HTTP_1_1, HttpResponseStatus.BAD_REQUEST);
                 channel.writeAndFlush(res).addListener(ChannelFutureListener.CLOSE);
                 req.release();
                 return;
             }
-
+            // 获取sid
             List<String> sid = queryDecoder.parameters().get("sid");
-            if (queryDecoder.path().equals(connectPath)
-                    && sid == null) {
+            if (queryDecoder.path().equals(connectPath) && sid == null) {
+                // 获取origin
                 String origin = req.headers().get(HttpHeaderNames.ORIGIN);
                 if (!authorize(ctx, channel, origin, queryDecoder.parameters(), req)) {
                     req.release();
@@ -145,14 +151,26 @@ public class AuthorizeHandler extends ChannelInboundHandlerAdapter implements Di
         ctx.fireChannelRead(msg);
     }
 
+    /**
+     * 验证是否符合要求
+     * @param ctx
+     * @param channel
+     * @param origin
+     * @param params
+     * @param req
+     * @return
+     * @throws IOException
+     */
     private boolean authorize(ChannelHandlerContext ctx, Channel channel, String origin, Map<String, List<String>> params, FullHttpRequest req)
             throws IOException {
+        // 把header存放在headers map中
         Map<String, List<String>> headers = new HashMap<String, List<String>>(req.headers().names().size());
         for (String name : req.headers().names()) {
             List<String> values = req.headers().getAll(name);
             headers.put(name, values);
         }
 
+        // 组装handshakeData
         HandshakeData data = new HandshakeData(req.headers(), params,
                 (InetSocketAddress)channel.remoteAddress(),
                 (InetSocketAddress)channel.localAddress(),
@@ -160,15 +178,15 @@ public class AuthorizeHandler extends ChannelInboundHandlerAdapter implements Di
 
         boolean result = false;
         try {
+            // 检查数据是否授权
             result = configuration.getAuthorizationListener().isAuthorized(data);
         } catch (Exception e) {
             log.error("Authorization error", e);
         }
-
+        // 如果检查不通过，则返回未授权，并关闭
         if (!result) {
             HttpResponse res = new DefaultHttpResponse(HTTP_1_1, HttpResponseStatus.UNAUTHORIZED);
-            channel.writeAndFlush(res)
-                    .addListener(ChannelFutureListener.CLOSE);
+            channel.writeAndFlush(res).addListener(ChannelFutureListener.CLOSE);
             log.debug("Handshake unauthorized, query params: {} headers: {}", params, headers);
             return false;
         }
